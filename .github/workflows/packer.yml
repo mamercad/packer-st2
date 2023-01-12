@@ -26,8 +26,11 @@ jobs:
         with:
           version: "${{ env.PACKER_VERSION }}"
 
+      # - name: Packer validate
+      #   run: make validate
+
       - name: Packer validate
-        run: make validate
+        run: packer validate st2.json
 
       - name: Packer build
         run: make build
