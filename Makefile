@@ -9,6 +9,7 @@ UNAME := $(shell uname | tr '[:upper:]' '[:lower:]')
 ST2_VERSION ?= $(shell curl --silent "https://api.github.com/repos/stackstorm/st2/releases/latest" | grep -Po '"tag_name": "v\K.*?(?=")')
 # Get today's date if 'BOX_VERSION' ENV var not set (ex: `20180507`)
 BOX_VERSION ?= $(shell date -u +%Y%m%d)
+BOX_ORG ?= stackstorm
 
 
 .PHONY: install-packer validate build clean
@@ -31,14 +32,22 @@ tmp/packer_$(PACKER_VERSION).zip:
 
 validate: $(PACKER)
 	$(PACKER) validate st2.json
+	$(PACKER) validate st2_publish.json
 
 #	$(PACKER) validate st2_deploy.json
 
-build: $(PACKER)
+build: $(PACKER) validate
 	$(PACKER) build \
 		-var 'st2_version=$(ST2_VERSION)' \
 		-var 'box_version=$(BOX_VERSION)' \
 		st2.json
+
+publish: $(PACKER) validate
+	$(PACKER) build \
+		-var 'st2_version=$(ST2_VERSION)' \
+		-var 'box_version=$(BOX_VERSION)' \
+		-var 'box_org=$(BOX_ORG)' \
+		st2_publish.json
 
 # 'Vagrant-cloud-standalone' is a forked Packer post-processor plugin to deploy .box artifact to Vagrant Cloud
 # install-vagrant-cloud-standalone: tmp/vagrant-cloud-standalone_$(VAGRANT_CLOUD_STANDALONE_VERSION).zip
