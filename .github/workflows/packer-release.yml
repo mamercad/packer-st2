@@ -22,6 +22,9 @@ jobs:
 
       - name: Packer validate
         run: make validate
+        env:
+          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+          BOX_ORG: ${{ github.repository_owner }}
 
       - name: Packer build
         run: make build
