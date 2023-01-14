@@ -36,6 +36,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: ${{ github.ref_name }}
           prerelease: true
-          title: Development Build
+          title: StackStorm Box ${{ github.ref_name }}
           files: |
             builds/st2_v-*.box
