@@ -6,7 +6,7 @@ CURL ?= curl
 SHELL := /bin/bash
 UNAME := $(shell uname | tr '[:upper:]' '[:lower:]')
 # Fetch latest stable release if 'ST2_VERSION' ENV var not set (ex: `2.7.1`)
-ST2_VERSION ?= $(shell curl --silent "https://api.github.com/repos/stackstorm/st2/releases/latest" | grep -Po '"tag_name": "v\K.*?(?=")')
+ST2_VERSION ?= $(shell curl --silent "https://api.github.com/repos/stackstorm/st2/releases/latest" | jq -r .tag_name)
 # Get today's date if 'BOX_VERSION' ENV var not set (ex: `20180507`)
 BOX_VERSION ?= $(shell date -u +%Y%m%d)
 BOX_ORG ?= stackstorm
@@ -32,7 +32,11 @@ tmp/packer_$(PACKER_VERSION).zip:
 
 validate: $(PACKER)
 	$(PACKER) validate st2.json
-	$(PACKER) validate st2_publish.json
+	$(PACKER) validate \
+		-var 'st2_version=$(ST2_VERSION)' \
+		-var 'box_version=$(BOX_VERSION)' \
+		-var 'box_org=$(BOX_ORG)' \
+		st2_publish.json
 
 #	$(PACKER) validate st2_deploy.json
 
