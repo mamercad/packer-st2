@@ -28,7 +28,7 @@ jobs:
 
       - name: Create dummy box
         run: |
-          touch builds/st2_v-$(date +%Y%m%d).box
+          mkfile 1b builds/st2_v-$(date +%Y%m%d).box
 
       - name: Create GH Release
         uses: marvinpinto/action-automatic-releases@v1.2.1
