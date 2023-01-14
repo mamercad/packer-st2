@@ -1,5 +1,5 @@
 ---
-name: packer
+name: packer-build
 
 on:
   push:
@@ -10,9 +10,6 @@ concurrency:
   group: packer
   cancel-in-progress: true
 
-# env:
-#   PACKER_VERSION: "1.8.4"
-
 jobs:
   packer:
     runs-on: macos-12
@@ -20,14 +17,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      # - name: Setup packer
-      #   uses: hashicorp/setup-packer@v2.0.0
-      #   with:
-      #     version: "${{ env.PACKER_VERSION }}"
-
-      # - name: Packer validate
-      #   run: packer validate st2.json
 
       - name: Packer validate
         run: make validate
