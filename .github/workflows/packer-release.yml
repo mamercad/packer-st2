@@ -28,6 +28,9 @@ jobs:
 
       - name: Packer build
         run: make build
+        env:
+          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+          BOX_ORG: ${{ github.repository_owner }}
 
       # - name: Create dummy box
       #   run: |
