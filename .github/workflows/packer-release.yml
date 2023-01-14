@@ -20,15 +20,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # - name: Packer validate
-      #   run: make validate
+      - name: Packer validate
+        run: make validate
 
-      # - name: Packer build
-      #   run: make build
+      - name: Packer build
+        run: make build
 
-      - name: Create dummy box
-        run: |
-          mkfile 1b builds/st2_v-$(date +%Y%m%d).box
+      # - name: Create dummy box
+      #   run: |
+      #     mkfile 1b builds/st2_v-$(date +%Y%m%d).box
 
       - name: Create GH Release
         uses: marvinpinto/action-automatic-releases@v1.2.1
