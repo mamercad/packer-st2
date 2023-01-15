@@ -10,6 +10,10 @@ concurrency:
   group: packer
   cancel-in-progress: false
 
+env:
+  VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+  BOX_ORG: ${{ github.repository_owner }}
+
 jobs:
   packer:
     runs-on: macos-12
