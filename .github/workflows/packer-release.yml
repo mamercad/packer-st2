@@ -10,6 +10,10 @@ concurrency:
   group: packer
   cancel-in-progress: false
 
+env:
+  VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+  BOX_ORG: ${{ github.repository_owner }}
+
 jobs:
   packer:
     runs-on: macos-12
@@ -22,15 +26,9 @@ jobs:
 
       - name: Packer validate
         run: make validate
-        env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
-          BOX_ORG: ${{ github.repository_owner }}
 
       - name: Packer build
         run: make build
-        env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
-          BOX_ORG: ${{ github.repository_owner }}
 
       # - name: Create dummy box
       #   run: |
@@ -46,9 +44,6 @@ jobs:
           files: |
             builds/st2_v-*.box
 
-      - name: Publish on Vagrant Cloud
-        run: |
-          make publish
-        env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
-          BOX_ORG: ${{ github.repository_owner }}
+      # - name: Publish on Vagrant Cloud
+      #   run: |
+      #     make publish
