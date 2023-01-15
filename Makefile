@@ -6,7 +6,7 @@ CURL ?= curl
 SHELL := /bin/bash
 UNAME := $(shell uname | tr '[:upper:]' '[:lower:]')
 # Fetch latest stable release if 'ST2_VERSION' ENV var not set (ex: `2.7.1`)
-ST2_VERSION ?= $(shell curl --silent "https://api.github.com/repos/stackstorm/st2/releases/latest" | jq -r .tag_name)
+ST2_VERSION ?= $(shell curl --silent "https://api.github.com/repos/stackstorm/st2/releases/latest" | jq -r .tag_name | sed 's/^v//')
 # Get today's date if 'BOX_VERSION' ENV var not set (ex: `20180507`)
 BOX_VERSION ?= $(shell date -u +%Y%m%d)
 BOX_ORG ?= stackstorm
