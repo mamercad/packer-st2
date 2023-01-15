@@ -42,7 +42,7 @@ jobs:
           prerelease: true
           title: StackStorm Box ${{ github.ref_name }}
           files: |
-            builds/st2_v-*.box
+            builds/st2_${{ github.ref_name }}.box
 
       # - name: Publish on Vagrant Cloud
       #   run: |
