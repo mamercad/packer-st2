@@ -12,7 +12,7 @@ BOX_VERSION ?= $(shell date -u +%Y%m%d)
 BOX_ORG ?= stackstorm
 
 
-.PHONY: install-packer validate build clean
+.PHONY: install-inspec inspec-lint install-packer validate build publish clean
 
 install-packer: tmp/packer_$(PACKER_VERSION).zip
 	mkdir -p ~/bin
@@ -38,12 +38,41 @@ validate: $(PACKER)
 		-var 'box_org=$(BOX_ORG)' \
 		st2_publish.json
 
+INSPEC = $(shell command -v inspec 2>/dev/null)
+install-inspec: # https://docs.chef.io/inspec/install
+ifeq (,$(INSPEC))
+	@{ \
+		case $(UNAME) in \
+			darwin) \
+				brew install chef/chef/inspec; \
+				;; \
+			linux) \
+				curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P inspec; \
+				;; \
+		esac \
+	}
+	INSPEC = $(shell command -v inspec 2>/dev/null)
+endif
+
+inspec-lint: $(INSPEC)
+	@{ \
+		cd test/integration/ && \
+		for dir in */; do \
+			dir=$$(basename $$dir) ; \
+			if [ -f "$${dir}/inspec.yml" ]; then \
+				echo -e "\nRunning Inspec lint for \033[1;36m$${dir}\033[0m ..."; \
+				inspec check --chef-license=accept-silent --diagnose $${dir}; \
+			fi \
+		done \
+	}
+
 #	$(PACKER) validate st2_deploy.json
 
 build: $(PACKER) validate
 	$(PACKER) build \
 		-var 'st2_version=$(ST2_VERSION)' \
 		-var 'box_version=$(BOX_VERSION)' \
+		-var 'box_org=$(BOX_ORG)' \
 		st2.json
 
 publish: $(PACKER) validate
