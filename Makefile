@@ -97,8 +97,8 @@ publish: $(PACKER) validate
 		-var 'box_org=$(BOX_ORG)' \
 		st2_publish.json
 
-publish-manually:
-	@echo vagrant cloud publish \
+publish-manually: $(VAGRANT)
+	@vagrant cloud publish \
 		$(BOX_ORG)/st2 $(BOX_VERSION) virtualbox st2_v$(ST2_VERSION)-$(BOX_VERSION).box \
 		--description \"StackStorm $(ST2_VERSION)\" \
 		--short-description \"StackStorm $(ST2_VERSION)\" \
