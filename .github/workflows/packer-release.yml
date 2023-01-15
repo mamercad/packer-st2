@@ -44,6 +44,6 @@ jobs:
           files: |
             builds/st2_${{ github.ref_name }}.box
 
-      # - name: Publish on Vagrant Cloud
-      #   run: |
-      #     make publish
+      - name: Publish on Vagrant Cloud
+        run: |
+          make publish-manually

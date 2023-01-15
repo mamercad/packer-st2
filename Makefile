@@ -1,5 +1,7 @@
 PACKER ?= ~/bin/packer
 PACKER_VERSION := 1.8.4
+VAGRANT ?= ~/bin/vagrant
+VAGRANT_VERSION := 2.3.4
 # VAGRANT_CLOUD_STANDALONE_VERSION := 0.1.3
 GIT ?= git
 CURL ?= curl
@@ -12,7 +14,20 @@ BOX_VERSION ?= $(shell date -u +%Y%m%d)
 BOX_ORG ?= stackstorm
 
 
-.PHONY: install-inspec inspec-lint install-packer validate build publish clean
+.PHONY: install-inspec inspec-lint install-packer validate build publish publish-manually clean
+
+install-vagrant: tmp/vagrant_$(VAGRANT_VERSION).zip
+	mkdir -p ~/bin
+	unzip -o -d ~/bin $<
+	chmod +x $(VAGRANT)
+	@echo Vagrant $(VAGRANT_VERSION) was successfully installed!
+
+$(VAGRANT):
+	@$(MAKE) install-vagrant
+
+tmp/vagrant_$(VAGRANT_VERSION).zip:
+	curl -fsSLo $@ 'https://releases.hashicorp.com/vagrant/$(VAGRANT_VERSION)/vagrant_$(VAGRANT_VERSION)_$(UNAME)_amd64.zip'
+	@echo Downloaded new Vagrant version: $(VAGRANT_VERSION)!
 
 install-packer: tmp/packer_$(PACKER_VERSION).zip
 	mkdir -p ~/bin
@@ -81,6 +96,17 @@ publish: $(PACKER) validate
 		-var 'box_version=$(BOX_VERSION)' \
 		-var 'box_org=$(BOX_ORG)' \
 		st2_publish.json
+
+publish-manually:
+	@echo vagrant cloud publish \
+		$(BOX_ORG)/st2 $(BOX_VERSION) virtualbox st2_v$(ST2_VERSION)-$(BOX_VERSION).box \
+		--description \"StackStorm $(ST2_VERSION)\" \
+		--short-description \"StackStorm $(ST2_VERSION)\" \
+		--version-description \"StackStorm $(ST2_VERSION)\" \
+		--checksum-type sha256 \
+		--checksum \"$(shell sha256sum builds/st2_v$(ST2_VERSION)-$(BOX_VERSION).box | awk '{print $$1}')\" \
+		--private \
+		--force
 
 # 'Vagrant-cloud-standalone' is a forked Packer post-processor plugin to deploy .box artifact to Vagrant Cloud
 # install-vagrant-cloud-standalone: tmp/vagrant-cloud-standalone_$(VAGRANT_CLOUD_STANDALONE_VERSION).zip
