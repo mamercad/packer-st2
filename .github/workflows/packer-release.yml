@@ -46,4 +46,9 @@ jobs:
 
       - name: Publish on Vagrant Cloud
         run: |
+          echo "::group::Install coreutils for sha256sum"
+          brew install coreutils
+          echo "::endgroup::"
+          echo "::group::Publish on Vagrant Cloud"
           make publish-manually
+          echo "::endgroup::"
