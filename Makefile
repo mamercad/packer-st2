@@ -14,20 +14,31 @@ BOX_VERSION ?= $(shell date -u +%Y%m%d)
 BOX_ORG ?= stackstorm
 
 
-.PHONY: install-inspec inspec-lint install-packer validate build publish publish-manually clean
+.PHONY: install-inspec inspec-lint install-packer validate build publish publish-manually clean install-vagrant
 
-install-vagrant: tmp/vagrant_$(VAGRANT_VERSION).zip
-	mkdir -p ~/bin
-	unzip -o -d ~/bin $<
-	chmod +x $(VAGRANT)
-	@echo Vagrant $(VAGRANT_VERSION) was successfully installed!
-
-$(VAGRANT):
-	@$(MAKE) install-vagrant
-
-tmp/vagrant_$(VAGRANT_VERSION).zip:
-	curl -fsSLo $@ 'https://releases.hashicorp.com/vagrant/$(VAGRANT_VERSION)/vagrant_$(VAGRANT_VERSION)_$(UNAME)_amd64.zip'
-	@echo Downloaded new Vagrant version: $(VAGRANT_VERSION)!
+VAGRANT = $(shell command -v vagrant 2>/dev/null)
+install-vagrant:
+ifeq (,$(VAGRANT))
+	@{ \
+		case $(UNAME) in \
+			darwin) \
+				curl -fsSLo tmp/vagrant.dmg 'https://releases.hashicorp.com/vagrant/$(VAGRANT_VERSION)/vagrant_$(VAGRANT_VERSION)_$(UNAME)_amd64.dmg'; \
+				hdiutil attach tmp/vagrant.dmg; \
+				sudo installer -pkg /Volumes/Vagrant/vagrant.pkg -target /; \
+				hdiutil detach /dev/disk2s1; \
+				@echo Vagrant $(VAGRANT_VERSION) was successfully installed!
+				;; \
+			linux) \
+				curl -fsSLo tmp/vagrant.zip 'https://releases.hashicorp.com/vagrant/$(VAGRANT_VERSION)/vagrant_$(VAGRANT_VERSION)_$(UNAME)_amd64.zip'; \
+				mkdir -p ~/bin 2>/dev/null; \
+				unzip -o -d ~/bin tmp/vagrant.zip; \
+				chmod +x bin/vagrant; \
+				@echo Vagrant $(VAGRANT_VERSION) was successfully installed!
+				;; \
+		esac \
+	}
+	VAGRANT = $(shell command -v vagrant 2>/dev/null)
+endif
 
 install-packer: tmp/packer_$(PACKER_VERSION).zip
 	mkdir -p ~/bin
