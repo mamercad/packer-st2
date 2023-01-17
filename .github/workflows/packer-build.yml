@@ -7,7 +7,7 @@ on:
       - gha
 
 concurrency:
-  group: packer
+  group: packer-build
   cancel-in-progress: false
 
 env:
@@ -27,3 +27,12 @@ jobs:
 
       - name: Packer build
         run: make build
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: StackStorm Box ${{ github.run_number }}
+          path: |
+            builds/st2_*.box
+          if-no-files-found: error
+          retention-days: 1
