@@ -22,6 +22,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Export ST2_VERSION and BOX_VERSION
+        run: |
+          echo "ST2_VERSION=$(curl --silent \
+            'https://api.github.com/repos/stackstorm/st2/releases/latest' \
+            | jq -r .tag_name | sed 's/^v//')" >> $GITHUB_ENV
+          echo "BOX_VERSION=${{ github.run_number }}.${{ github.run_attempt }}" \
+            >> $GITHUB_ENV
+
       - name: Packer validate
         run: make validate
 
@@ -31,7 +39,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: StackStorm Box ${{ github.run_number }}
+          name: StackStorm Box ${{ env.BOX_VERSION }}
           path: |
             builds/st2_*.box
           if-no-files-found: error
