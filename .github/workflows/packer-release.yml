@@ -5,6 +5,7 @@ on:
   push:
     tags:
       - v*
+  workflow_dispatch:
 
 concurrency:
   group: packer-release
@@ -24,6 +25,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # NOTE: Even though ST2_VERSION and BOX_VERSION are the same in the Makefile is is arguably nice to see them here.
+      - name: Export ST2_VERSION and BOX_VERSION
+        run: |
+          echo "ST2_VERSION=$(curl --silent \
+            'https://api.github.com/repos/stackstorm/st2/releases/latest' \
+            | jq -r .tag_name | sed 's/^v//')" >> $GITHUB_ENV
+          echo "BOX_VERSION=${{ github.run_number }}.${{ github.run_attempt }}" \
+            >> $GITHUB_ENV
+
       - name: Packer validate
         run: make validate
 
@@ -40,6 +50,7 @@ jobs:
           files: |
             builds/st2_${{ github.ref_name }}.box
 
+      # NOTE: I could not get https://github.com/armab/packer-post-processor-vagrant-cloud-standalone#description to work
       - name: Publish on Vagrant Cloud
         run: |
           echo "::group::Install coreutils for sha256sum"
