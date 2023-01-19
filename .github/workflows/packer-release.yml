@@ -31,7 +31,7 @@ jobs:
           echo "ST2_VERSION=$(curl --silent \
             'https://api.github.com/repos/stackstorm/st2/releases/latest' \
             | jq -r .tag_name | sed 's/^v//')" >> $GITHUB_ENV
-          echo "BOX_VERSION=${{ github.run_number }}.${{ github.run_attempt }}" \
+          echo "BOX_VERSION=${{ github.ref_name }}" \
             >> $GITHUB_ENV
 
       - name: Packer validate
@@ -46,7 +46,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: ${{ github.ref_name }}
           prerelease: true
-          title: StackStorm Box ${{ github.ref_name }}
+          title: StackStorm Box ${{ env.BOX_VERSION }}
           files: |
             builds/st2_${{ github.ref_name }}.box
 
