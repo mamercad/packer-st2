@@ -31,7 +31,8 @@ jobs:
           echo "ST2_VERSION=$(curl --silent \
             'https://api.github.com/repos/stackstorm/st2/releases/latest' \
             | jq -r .tag_name | sed 's/^v//')" >> $GITHUB_ENV
-          echo "BOX_VERSION=${{ github.ref_name }}" \
+          # Turn tags like v3.8.0-20230119 into just 20230119
+          echo BOX_VERSION=$(echo "${{ github.ref_name }}" | cut -d'-' -f2) \
             >> $GITHUB_ENV
 
       - name: Packer validate
@@ -46,7 +47,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: ${{ github.ref_name }}
           prerelease: true
-          title: StackStorm Box ${{ env.BOX_VERSION }}
+          title: StackStorm Box ${{ github.ref_name }}
           files: |
             builds/st2_${{ github.ref_name }}.box
 
@@ -56,6 +57,7 @@ jobs:
           echo "::group::Install coreutils for sha256sum"
           brew install coreutils
           echo "::endgroup::"
+
           echo "::group::Publish on Vagrant Cloud"
           make publish-manually
           echo "::endgroup::"

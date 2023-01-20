@@ -34,7 +34,7 @@ jobs:
           echo "ST2_VERSION=$(curl --silent \
             'https://api.github.com/repos/stackstorm/st2/releases/latest' \
             | jq -r .tag_name | sed 's/^v//')" >> $GITHUB_ENV
-          echo "BOX_VERSION=$(date -u +%Y%m%d).${{ github.run_number }}.${{ github.run_attempt }}" \
+          echo "BOX_VERSION=$(date -u +%Y%m%d)-${{ github.run_number }}.${{ github.run_attempt }}" \
             >> $GITHUB_ENV
 
       - name: Packer validate
@@ -46,7 +46,7 @@ jobs:
       - name: Archive build box (for inspection)
         uses: actions/upload-artifact@v3
         with:
-          name: StackStorm Box ${{ env.BOX_VERSION }}
+          name: StackStorm Box v${{ env.ST2_VERSION }}-${{ env.BOX_VERSION }}
           path: |
             builds/st2_*.box
           if-no-files-found: error
