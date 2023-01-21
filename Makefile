@@ -114,7 +114,7 @@ publish-manually: $(VAGRANT)
 		--short-description "StackStorm v$(ST2_VERSION)-$(BOX_VERSION)" \
 		--version-description "StackStorm v$(ST2_VERSION)-$(BOX_VERSION)" \
 		--checksum-type sha256 --checksum "$(shell sha256sum builds/st2_v$(ST2_VERSION)-$(BOX_VERSION).box | awk '{print $$1}')" \
-		--force --release $(BOX_ORG)/st2 v$(ST2_VERSION)-$(BOX_VERSION) virtualbox builds/st2_v$(ST2_VERSION)-$(BOX_VERSION).box
+		--force --release $(BOX_ORG)/st2 $(ST2_VERSION)-$(BOX_VERSION) virtualbox builds/st2_v$(ST2_VERSION)-$(BOX_VERSION).box
 
 # 'Vagrant-cloud-standalone' is a forked Packer post-processor plugin to deploy .box artifact to Vagrant Cloud
 # install-vagrant-cloud-standalone: tmp/vagrant-cloud-standalone_$(VAGRANT_CLOUD_STANDALONE_VERSION).zip
