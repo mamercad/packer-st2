@@ -110,11 +110,11 @@ publish: $(PACKER) validate
 
 publish-manually: $(VAGRANT)
 	vagrant cloud publish \
-		--description "StackStorm $(ST2_VERSION)" \
-		--short-description "StackStorm $(ST2_VERSION)" \
-		--version-description "StackStorm $(ST2_VERSION)" \
+		--description "Box with StackStorm (aka 'IFTTT for Ops') event-driven automation platform: auto-remediation, security responses, facilitated troubleshooting, complex deployments, ChatOps and more. \n* https://stackstorm.com/ \n* Documentation: https://docs.stackstorm.com/ \n* Community: https://stackstorm.com/community-signup \n* Forum: https://forum.stackstorm.com/", \
+		--short-description "StackStorm v$(ST2_VERSION)-$(BOX_VERSION)",
+		--version-description "StackStorm v$(ST2_VERSION)-$(BOX_VERSION)",
 		--checksum-type sha256 --checksum "$(shell sha256sum builds/st2_v$(ST2_VERSION)-$(BOX_VERSION).box | awk '{print $$1}')" \
-		--force $(BOX_ORG)/st2 $(BOX_VERSION) virtualbox builds/st2_v$(ST2_VERSION)-$(BOX_VERSION).box
+		--force --release $(BOX_ORG)/st2 v$(ST2_VERSION)-$(BOX_VERSION) virtualbox builds/st2_v$(ST2_VERSION)-$(BOX_VERSION).box
 
 # 'Vagrant-cloud-standalone' is a forked Packer post-processor plugin to deploy .box artifact to Vagrant Cloud
 # install-vagrant-cloud-standalone: tmp/vagrant-cloud-standalone_$(VAGRANT_CLOUD_STANDALONE_VERSION).zip
